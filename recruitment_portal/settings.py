@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-lsg9!lzq1yyv65y4a2043hox=-3(brab0376z0t5iof7t=z^)*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ['shivani-technologies.onrender.com', '127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://shivani-technologies.onrender.com']
 
 # Application definition
 
