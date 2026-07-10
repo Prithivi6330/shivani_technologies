@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5" data-aos="zoom-in">
+    <div class="card shadow-lg p-5">
+        <h2 class="text-center mb-4">Get In Touch</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label>Name</label>
+                <input type="text" class="form-control" placeholder="Enter your name">
+            </div>
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" placeholder="name@example.com">
+            </div>
+            <div class="mb-3">
+                <label>Message</label>
+                <textarea class="form-control" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Send Message</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

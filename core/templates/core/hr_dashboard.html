@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Master Dashboard | Shivani Tech</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        .sidebar { background-color: #0f172a; min-height: 100vh; color: white; border-right: 1px solid #1e293b; display: flex; flex-direction: column; }
+        .sidebar .nav-link { color: #94a3b8; transition: all 0.3s; border-radius: 10px; margin-bottom: 8px; padding: 12px 16px; font-weight: 500; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #1e293b; color: #38bdf8; }
+        .sidebar .nav-link i { width: 24px; }
+        .stat-card { border: none; border-radius: 20px; transition: all 0.3s ease; background: white; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important; }
+        .card-counter { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .table-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .badge-pending { background-color: #fef3c7; color: #d97706; font-weight: 600; }
+        .badge-accepted { background-color: #d1fae5; color: #059669; font-weight: 600; }
+        .badge-rejected { background-color: #fee2e2; color: #dc2626; font-weight: 600; }
+        .search-box { border-radius: 30px; padding-left: 45px; background-color: #f8fafc; border: 1px solid #e2e8f0; }
+        .search-icon { position: absolute; left: 18px; top: 12px; color: #94a3b8; }
+        .filter-select { border-radius: 30px; background-color: #f8fafc; border: 1px solid #e2e8f0; padding-right: 35px; }
+        .hr-profile-section { margin-top: auto; padding: 20px; border-top: 1px solid #1e293b; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        
+        <div class="col-md-3 col-lg-2 sidebar p-4 d-none d-md-block shadow-sm">
+            <div class="d-flex align-items-center mb-4 ps-2">
+                <span class="p-2 bg-info bg-opacity-10 text-info rounded-3 me-2">
+                    <i class="fa-solid fa-laptop-code fs-5"></i>
+                </span>
+                <h4 class="fw-bold m-0 text-white">Shivani Tech</h4>
+            </div>
+            <hr class="opacity-10 text-white mb-4">
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"><i class="fa-solid fa-chart-pie"></i> Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/" target="_blank"><i class="fa-solid fa-user-gear"></i> Django Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa-solid fa-house"></i> View Website</a>
+                </li>
+            </ul>
+
+            <div class="hr-profile-section">
+                {% if request.user.hr_profile.profile_pic %}
+                    <img src="{{ request.user.hr_profile.profile_pic.url }}" width="50" height="50" style="border-radius: 50%; object-fit: cover;">
+                {% endif %}
+                <p class="mt-3 mb-1 fw-bold">{{ request.user.get_full_name }}</p>
+                <a href="{% url 'edit_hr_profile' %}" style="color: #ff9800; text-decoration: none; font-size: 0.9rem;">
+                    <i class="fa-solid fa-user-edit me-1"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10 p-4 p-md-5">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-5 gap-3">
+                <div>
+                    <h2 class="fw-bold text-dark m-0">HR Recruitment Dashboard</h2>
+                    <p class="text-muted m-0 mt-1">Manage and track all live job applications in one place.</p>
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-white bg-white text-dark border rounded-pill px-4 fw-semibold shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2 text-muted"></i>Back to Home
+                </a>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-6 col-lg-3"><div class="card stat-card p-4 shadow-sm border-start border-primary border-5"><h6 class="text-muted small text-uppercase">Total</h6><div class="card-counter text-dark">{{ total }}</div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card p-4 shadow-sm border-start border-warning border-5"><h6 class="text-muted small text-uppercase">Pending</h6><div class="card-counter text-warning">{{ pending }}</div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card p-4 shadow-sm border-start border-success border-5"><h6 class="text-muted small text-uppercase">Accepted</h6><div class="card-counter text-success">{{ accepted }}</div></div></div>
+                <div class="col-6 col-lg-3"><div class="card stat-card p-4 shadow-sm border-start border-danger border-5"><h6 class="text-muted small text-uppercase">Rejected</h6><div class="card-counter text-danger">{{ rejected }}</div></div></div>
+            </div>
+
+            <div class="d-flex flex-column flex-md-row gap-3 justify-content-between align-items-center mb-4">
+                <div class="position-relative w-100" style="max-width: 400px;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="dashboardSearch" class="form-control search-box py-2.5" placeholder="Search by candidate or job...">
+                </div>
+                <div class="w-100" style="max-width: 200px;">
+                    <select id="statusFilter" class="form-select filter-select py-2.5">
+                        <option value="all">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+            </div>
+
+          <div class="table-container shadow-sm bg-white">
+    <div class="bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold m-0 text-dark"><i class="fa-solid fa-list-check me-2 text-secondary"></i>Recent Applications</h5>
+        <a href="{% url 'hr_add_job' %}" class="btn btn-primary shadow-sm"><i class="fa-solid fa-plus me-2"></i>Post New Job</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0" id="applicationsTable">
+            <thead class="table-light text-uppercase fs-7 text-muted">
+                <tr>
+                    <th class="ps-4">Candidate</th>
+                    <th>Job Title</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th class="text-end pe-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr class="application-row" data-status="{{ app.status|lower }}">
+                    <td class="ps-4">
+                        <div class="fw-bold candidate-name">{{ app.user.username|capfirst }}</div>
+                        <small class="text-muted candidate-email">{{ app.user.email }}</small>
+                    </td>
+                    <td><span class="job-title">{{ app.job.title }}</span></td>
+                    <td>
+                        {% if app.resume %}
+                        <a href="{{ app.resume.url }}" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                            <i class="fa-solid fa-file-pdf me-1"></i> View
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge rounded-pill {% if app.status == 'Pending' %}badge-pending{% elif app.status == 'Accepted' %}badge-accepted{% else %}badge-rejected{% endif %}">
+                            {{ app.status }}
+                        </span>
+                    </td>
+                    <td class="text-end pe-4">
+                        <div class="btn-group">
+                            <a href="{% url 'update_status' app.id 'Accepted' %}" class="btn btn-sm btn-success rounded-start-pill px-3">
+                                <i class="fa-solid fa-check"></i>
+                            </a>
+                            <a href="{% url 'update_status' app.id 'Rejected' %}" class="btn btn-sm btn-danger rounded-end-pill px-3">
+                                <i class="fa-solid fa-xmark"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-inbox fa-2x mb-3 d-block"></i>
+                        No applications yet!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('dashboardSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const rows = document.querySelectorAll('.application-row');
+
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase();
+            const filterValue = statusFilter.value;
+            rows.forEach(row => {
+                const name = row.querySelector('.candidate-name').textContent.toLowerCase();
+                const email = row.querySelector('.candidate-email').textContent.toLowerCase();
+                const title = row.querySelector('.job-title').textContent.toLowerCase();
+                const status = row.getAttribute('data-status');
+                const matchesSearch = name.includes(searchText) || email.includes(searchText) || title.includes(searchText);
+                const matchesFilter = filterValue === 'all' || status === filterValue;
+                row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+            });
+        }
+        searchInput.addEventListener('input', filterTable);
+        statusFilter.addEventListener('change', filterTable);
+    });
+</script>
+</body>
+</html>

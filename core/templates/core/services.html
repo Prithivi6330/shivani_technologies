@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-5" data-aos="fade-down">Our Services</h2>
+    <div class="row g-4">
+        {% for service in services_list %}
+        <div class="col-md-4" data-aos="flip-left">
+            <div class="card p-4 h-100 shadow-sm hover-shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ service.title }}</h5>
+                    <p class="card-text">{{ service.desc }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

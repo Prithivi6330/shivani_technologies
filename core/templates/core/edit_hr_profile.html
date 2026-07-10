@@ -1,0 +1,26 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    </form>
+{% endblock %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Update Profile</button>
+</form>
+<!-- ப்ரொபைல் பிக்சர் காட்டும் இடம் -->
+{% if hr_profile and hr_profile.profile_pic %}
+    <img src="{{ hr_profile.profile_pic.url }}" alt="Profile Picture" width="100">
+{% else %}
+    <img src="/static/default-avatar.png" alt="No Profile" width="100">
+{% endif %}
+
+<!-- மற்ற பார்ம் ஃபீல்டுகள் -->
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- உங்கள் ஃபீல்டு நேம்ஸ் இங்கே -->
+    <input type="file" name="profile_pic">
+    <button type="submit">Save Changes</button>
+</form>
